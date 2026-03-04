@@ -250,14 +250,7 @@
 
     
     $('#btn-hospital').addEventListener('click', () => {
-
-    if (!navigator.geolocation) {
-        alert("Geolocation not supported by your browser.");
-        return;
-    }
-
-    navigator.geolocation.getCurrentPosition(findHospitals, () => {
-        alert("Unable to get your location.");
+    alert('🏥 Finding nearby hospitals...');
     });
 
 });
@@ -308,46 +301,3 @@ btnVoice.addEventListener("click", () => {
     }
 });
 
-function findHospitals(position){
-
-    const lat = position.coords.latitude;
-    const lon = position.coords.longitude;
-
-    const query = `
-    [out:json];
-    (
-      node["amenity"="hospital"](around:5000,${lat},${lon});
-      way["amenity"="hospital"](around:5000,${lat},${lon});
-      relation["amenity"="hospital"](around:5000,${lat},${lon});
-    );
-    out center;
-    `;
-
-    fetch("https://overpass-api.de/api/interpreter", {
-        method: "POST",
-        body: query
-    })
-    .then(res => res.json())
-    .then(data => {
-
-        if(data.elements.length === 0){
-            alert("No hospitals found nearby.");
-            return;
-        }
-
-        const hospital = data.elements[0];
-
-        const hLat = hospital.lat || hospital.center.lat;
-        const hLon = hospital.lon || hospital.center.lon;
-
-        const mapURL = `https://www.openstreetmap.org/?mlat=${hLat}&mlon=${hLon}#map=15/${hLat}/${hLon}`;
-
-        window.open(mapURL, "_blank");
-
-    })
-    .catch(err => {
-        console.error(err);
-        alert("Error finding hospitals.");
-    });
-
-}
