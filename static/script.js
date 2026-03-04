@@ -253,8 +253,6 @@
     alert('🏥 Finding nearby hospitals...');
     });
 
-});
-
     $('#btn-restart').addEventListener('click', resetApp);
 })();
 // Voice Recognition Setup
