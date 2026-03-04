@@ -5,19 +5,18 @@ import os
 app = Flask(__name__)
 app.secret_key = "health_secret_key"
 
+DATABASE = "users.db"
+
 
 # ---------------- DATABASE ---------------- #
 
-DATABASE = "users.db"
-
 def init_db():
-
     if not os.path.exists(DATABASE):
 
         conn = sqlite3.connect(DATABASE)
 
         conn.execute("""
-        CREATE TABLE users(
+        CREATE TABLE IF NOT EXISTS users(
         id INTEGER PRIMARY KEY AUTOINCREMENT,
         email TEXT UNIQUE NOT NULL,
         password TEXT NOT NULL
@@ -27,17 +26,16 @@ def init_db():
         conn.commit()
         conn.close()
 
-        print("Database created successfully")
+        print("Database initialized")
 
 
 def get_db():
-
     conn = sqlite3.connect(DATABASE)
     conn.row_factory = sqlite3.Row
     return conn
 
 
-# ---------------- SYMPTOM DATA ---------------- #
+# ---------------- SYMPTOMS ---------------- #
 
 symptom_weights = {
 
@@ -74,7 +72,7 @@ symptom_weights = {
 }
 
 
-# ---------------- RISK CALCULATION ---------------- #
+# ---------------- RISK LOGIC ---------------- #
 
 def calculate_risk(symptoms):
 
@@ -94,24 +92,24 @@ def calculate_risk(symptoms):
 
     if score <= 25:
         risk = "Low"
-        recommendation = "Rest and monitor symptoms at home."
+        recommendation = "Rest and monitor symptoms."
 
     elif score <= 50:
         risk = "Moderate"
-        recommendation = "Consider consulting a doctor online."
+        recommendation = "Consult a doctor online."
 
     elif score <= 75:
         risk = "High"
-        recommendation = "Visit a nearby hospital or clinic."
+        recommendation = "Visit a hospital."
 
     else:
         risk = "Critical"
-        recommendation = "Seek emergency medical attention immediately."
+        recommendation = "Seek emergency medical attention."
 
     return score, risk, recommendation, detected, unknown
 
 
-# ---------------- HOME ROUTE ---------------- #
+# ---------------- HOME ---------------- #
 
 @app.route("/")
 def home():
@@ -129,8 +127,8 @@ def login():
 
     if request.method == "POST":
 
-        email = request.form["email"]
-        password = request.form["password"]
+        email = request.form.get("email")
+        password = request.form.get("password")
 
         db = get_db()
 
@@ -157,8 +155,8 @@ def signup():
 
     if request.method == "POST":
 
-        email = request.form["email"]
-        password = request.form["password"]
+        email = request.form.get("email")
+        password = request.form.get("password")
 
         db = get_db()
 
@@ -176,7 +174,6 @@ def signup():
             return redirect("/index")
 
         except sqlite3.IntegrityError:
-
             return "User already exists"
 
         finally:
@@ -195,7 +192,7 @@ def logout():
     return redirect("/login")
 
 
-# ---------------- MAIN PAGE ---------------- #
+# ---------------- DASHBOARD ---------------- #
 
 @app.route("/index")
 def index():
@@ -206,7 +203,7 @@ def index():
     return render_template("index.html")
 
 
-# ---------------- PREDICTION API ---------------- #
+# ---------------- PREDICTION ---------------- #
 
 @app.route("/predict", methods=["POST"])
 def predict():
@@ -231,10 +228,6 @@ def predict():
     })
 
 
-# ---------------- RUN APP ---------------- #
+# ---------------- INIT DATABASE ---------------- #
 
-if __name__ == "__main__":
-
-    init_db()  # create database automatically
-
-    app.run(debug=True)
+init_db()
