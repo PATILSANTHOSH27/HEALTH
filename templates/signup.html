@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Signup | Health AI</title>
+
+<link rel="stylesheet" href="{{ url_for('static', filename='signup.css') }}\">
+
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
+
+</head>
+
+<body>
+
+<div class="background"></div>
+
+<div class="signup-container">
+
+<h1>Create Account</h1>
+<p>Join Health AI</p>
+
+<form method="POST">
+
+<div class="input-box">
+<input type="text" name="name" required>
+<label>Full Name</label>
+</div>
+
+<div class="input-box">
+<input type="email" name="email" required>
+<label>Email</label>
+</div>
+
+<div class="input-box">
+<input type="password" name="password" required>
+<label>Password</label>
+</div>
+
+<button class="signup-btn">Sign Up</button>
+
+<p class="login-text">
+Already have an account?
+<a href="/login">Login</a>
+</p>
+
+</form>
+
+</div>
+
+</body>
+</html>

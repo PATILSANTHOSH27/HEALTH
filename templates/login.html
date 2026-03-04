@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Login | Health Risk AI</title>
+
+<link rel="stylesheet" href="{{ url_for('static', filename='login.css') }}">
+
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
+
+</head>
+
+<body>
+
+<div class="background"></div>
+
+<div class="login-container">
+
+<h1>Health AI</h1>
+<p>Secure Login</p>
+
+<form method="POST">
+
+<div class="input-box">
+<input type="email" name="email" required>
+<label>Email</label>
+</div>
+
+<div class="input-box">
+<input type="password" name="password" required>
+<label>Password</label>
+</div>
+
+<button class="login-btn">Login</button>
+
+<p class="signup-text">
+Don't have an account?
+<a href="/signup">Create one</a>
+</p>
+
+</form>
+
+</div>
+
+</body>
+</html>
