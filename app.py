@@ -1,5 +1,6 @@
 from flask import Flask, request, jsonify, render_template, redirect, session
 import sqlite3
+import os
 
 app = Flask(__name__)
 app.secret_key = "health_secret_key"
@@ -7,8 +8,31 @@ app.secret_key = "health_secret_key"
 
 # ---------------- DATABASE ---------------- #
 
+DATABASE = "users.db"
+
+def init_db():
+
+    if not os.path.exists(DATABASE):
+
+        conn = sqlite3.connect(DATABASE)
+
+        conn.execute("""
+        CREATE TABLE users(
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        email TEXT UNIQUE NOT NULL,
+        password TEXT NOT NULL
+        )
+        """)
+
+        conn.commit()
+        conn.close()
+
+        print("Database created successfully")
+
+
 def get_db():
-    conn = sqlite3.connect("users.db")
+
+    conn = sqlite3.connect(DATABASE)
     conn.row_factory = sqlite3.Row
     return conn
 
@@ -65,7 +89,6 @@ def calculate_risk(symptoms):
         if symptom in symptom_weights:
             score += symptom_weights[symptom]
             detected.append(symptom)
-
         else:
             unknown.append(symptom)
 
@@ -116,9 +139,13 @@ def login():
             (email,password)
         ).fetchone()
 
+        db.close()
+
         if user:
             session["user"] = email
             return redirect("/index")
+
+        return "Invalid email or password"
 
     return render_template("login.html")
 
@@ -135,15 +162,25 @@ def signup():
 
         db = get_db()
 
-        db.execute(
-            "INSERT INTO users(email,password) VALUES (?,?)",
-            (email,password)
-        )
+        try:
 
-        db.commit()
+            db.execute(
+                "INSERT INTO users(email,password) VALUES (?,?)",
+                (email,password)
+            )
 
-        session["user"] = email
-        return redirect("/index")
+            db.commit()
+
+            session["user"] = email
+
+            return redirect("/index")
+
+        except sqlite3.IntegrityError:
+
+            return "User already exists"
+
+        finally:
+            db.close()
 
     return render_template("signup.html")
 
@@ -194,5 +231,10 @@ def predict():
     })
 
 
+# ---------------- RUN APP ---------------- #
+
 if __name__ == "__main__":
-    app.run(debug=True, port=5003)
+
+    init_db()  # create database automatically
+
+    app.run(debug=True)
