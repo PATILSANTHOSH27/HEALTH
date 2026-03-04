@@ -2,7 +2,8 @@ from flask import Flask, request, jsonify, render_template, redirect, session
 import sqlite3
 import os
 
-app = Flask(__name__)
+# Flask setup
+app = Flask(__name__, template_folder="templates", static_folder="static")
 app.secret_key = "health_secret_key"
 
 DATABASE = "users.db"
@@ -11,31 +12,29 @@ DATABASE = "users.db"
 # ---------------- DATABASE ---------------- #
 
 def init_db():
-    if not os.path.exists(DATABASE):
+    """Create database and users table if not exists"""
+    conn = sqlite3.connect(DATABASE)
 
-        conn = sqlite3.connect(DATABASE)
-
-        conn.execute("""
-        CREATE TABLE IF NOT EXISTS users(
+    conn.execute("""
+    CREATE TABLE IF NOT EXISTS users(
         id INTEGER PRIMARY KEY AUTOINCREMENT,
         email TEXT UNIQUE NOT NULL,
         password TEXT NOT NULL
-        )
-        """)
+    )
+    """)
 
-        conn.commit()
-        conn.close()
-
-        print("Database initialized")
+    conn.commit()
+    conn.close()
 
 
 def get_db():
+    """Get database connection"""
     conn = sqlite3.connect(DATABASE)
     conn.row_factory = sqlite3.Row
     return conn
 
 
-# ---------------- SYMPTOMS ---------------- #
+# ---------------- SYMPTOM DATA ---------------- #
 
 symptom_weights = {
 
@@ -72,7 +71,7 @@ symptom_weights = {
 }
 
 
-# ---------------- RISK LOGIC ---------------- #
+# ---------------- RISK CALCULATION ---------------- #
 
 def calculate_risk(symptoms):
 
@@ -92,7 +91,7 @@ def calculate_risk(symptoms):
 
     if score <= 25:
         risk = "Low"
-        recommendation = "Rest and monitor symptoms."
+        recommendation = "Rest and monitor symptoms at home."
 
     elif score <= 50:
         risk = "Moderate"
@@ -100,11 +99,11 @@ def calculate_risk(symptoms):
 
     elif score <= 75:
         risk = "High"
-        recommendation = "Visit a hospital."
+        recommendation = "Visit a nearby hospital."
 
     else:
         risk = "Critical"
-        recommendation = "Seek emergency medical attention."
+        recommendation = "Seek emergency medical attention immediately."
 
     return score, risk, recommendation, detected, unknown
 
@@ -203,7 +202,7 @@ def index():
     return render_template("index.html")
 
 
-# ---------------- PREDICTION ---------------- #
+# ---------------- PREDICTION API ---------------- #
 
 @app.route("/predict", methods=["POST"])
 def predict():
@@ -228,6 +227,6 @@ def predict():
     })
 
 
-# ---------------- INIT DATABASE ---------------- #
+# ---------------- INITIALIZE DATABASE ---------------- #
 
 init_db()
