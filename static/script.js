@@ -297,3 +297,18 @@ btnVoice.addEventListener("click", () => {
         recognition.start();
     }
 });
+const logoutBtn = document.querySelector(".logout-btn");
+
+function toggleLogout(){
+
+const welcomeScreen = document.getElementById("screen-welcome");
+
+if(welcomeScreen.classList.contains("active")){
+logoutBtn.style.display = "block";
+}else{
+logoutBtn.style.display = "none";
+}
+
+}
+
+setInterval(toggleLogout,200);
