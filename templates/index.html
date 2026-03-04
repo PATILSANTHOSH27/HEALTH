@@ -2,6 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
+
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 
 <title>AI Health Risk Detector</title>
@@ -22,11 +23,12 @@ top:20px;
 right:20px;
 background:#ef4444;
 color:white;
-padding:8px 14px;
-border-radius:6px;
+padding:10px 16px;
+border-radius:8px;
 text-decoration:none;
-font-size:14px;
+font-weight:600;
 z-index:9999;
+box-shadow:0 4px 10px rgba(0,0,0,0.3);
 }
 
 .logout-btn:hover{
@@ -86,9 +88,7 @@ Detect your health risk in seconds using advanced AI symptom analysis
 </div>
 
 <button class="btn btn-primary btn-glow" id="btn-start">
-
-<span>Start Symptom Check</span>
-
+Start Symptom Check
 </button>
 
 </div>
@@ -96,7 +96,7 @@ Detect your health risk in seconds using advanced AI symptom analysis
 </section>
 
 
-<!-- Screen 2 — Symptoms -->
+<!-- Screen 2 — Symptom Selection -->
 <section id="screen-symptoms" class="screen">
 
 <div class="screen-content">
@@ -113,12 +113,11 @@ Detect your health risk in seconds using advanced AI symptom analysis
 </div>
 
 <div class="symptom-counter" id="symptom-counter">
-
 <span id="symptom-count">0</span> symptoms selected
-
 </div>
 
-<div class="symptom-grid" id="symptom-grid"></div>
+<div class="symptom-grid" id="symptom-grid">
+</div>
 
 <div class="bottom-action">
 
@@ -133,7 +132,7 @@ Analyze Symptoms
 </section>
 
 
-<!-- Screen 3 — Result -->
+<!-- Screen 3 — Risk Result -->
 <section id="screen-result" class="screen">
 
 <div class="screen-content result-content">
@@ -154,6 +153,14 @@ Analyze Symptoms
 <h3>Risk Score: <span id="risk-score-number">0</span></h3>
 
 <p id="risk-level-text">Low Risk</p>
+
+</div>
+
+<div class="bottom-action">
+
+<button class="btn btn-primary btn-glow" id="btn-recommendation">
+View Recommendations
+</button>
 
 </div>
 
@@ -186,10 +193,20 @@ Analyze Symptoms
 
 </div>
 
+<div class="recommendation-actions">
+
+<button class="btn btn-call">
+Call Doctor
+</button>
+
+<button class="btn btn-hospital">
+Find Nearby Hospital
+</button>
+
+</div>
+
 <button class="btn btn-restart" id="btn-restart">
-
 Start New Check
-
 </button>
 
 </div>
