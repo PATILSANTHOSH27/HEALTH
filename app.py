@@ -88,16 +88,18 @@ def calculate_risk(symptoms):
     return score, risk, recommendation, detected, unknown
 
 
-# ---------------- AUTH ROUTES ---------------- #
+# ---------------- HOME ROUTE ---------------- #
 
 @app.route("/")
 def home():
 
     if "user" in session:
-        return redirect("/dashboard")
+        return redirect("/index")
 
     return redirect("/login")
 
+
+# ---------------- LOGIN ---------------- #
 
 @app.route("/login", methods=["GET","POST"])
 def login():
@@ -116,10 +118,12 @@ def login():
 
         if user:
             session["user"] = email
-            return redirect("/dashboard")
+            return redirect("/index")
 
     return render_template("login.html")
 
+
+# ---------------- SIGNUP ---------------- #
 
 @app.route("/signup", methods=["GET","POST"])
 def signup():
@@ -138,10 +142,13 @@ def signup():
 
         db.commit()
 
-        return redirect("/login")
+        session["user"] = email
+        return redirect("/index")
 
     return render_template("signup.html")
 
+
+# ---------------- LOGOUT ---------------- #
 
 @app.route("/logout")
 def logout():
@@ -151,15 +158,15 @@ def logout():
     return redirect("/login")
 
 
-# ---------------- DASHBOARD ---------------- #
+# ---------------- MAIN PAGE ---------------- #
 
-@app.route("/dashboard")
-def dashboard():
+@app.route("/index")
+def index():
 
     if "user" not in session:
         return redirect("/login")
 
-    return render_template("dashboard.html")
+    return render_template("index.html")
 
 
 # ---------------- PREDICTION API ---------------- #
@@ -181,7 +188,6 @@ def predict():
         "risk_score": score,
         "risk_level": risk,
         "recommendation": recommendation,
-
         "explanation": detected,
         "unknown_symptoms": unknown
 
@@ -189,4 +195,4 @@ def predict():
 
 
 if __name__ == "__main__":
-    app.run(debug=True , port=5003)
+    app.run(debug=True, port=5003)
