@@ -1,8 +1,20 @@
-from flask import Flask, request, jsonify, render_template
+from flask import Flask, request, jsonify, render_template, redirect, session
+import sqlite3
 
 app = Flask(__name__)
+app.secret_key = "health_secret_key"
 
-# Expanded symptom risk weights
+
+# ---------------- DATABASE ---------------- #
+
+def get_db():
+    conn = sqlite3.connect("users.db")
+    conn.row_factory = sqlite3.Row
+    return conn
+
+
+# ---------------- SYMPTOM DATA ---------------- #
+
 symptom_weights = {
 
     "fever": 20,
@@ -38,7 +50,8 @@ symptom_weights = {
 }
 
 
-# Risk calculation
+# ---------------- RISK CALCULATION ---------------- #
+
 def calculate_risk(symptoms):
 
     score = 0
@@ -50,14 +63,12 @@ def calculate_risk(symptoms):
         symptom = symptom.lower().strip()
 
         if symptom in symptom_weights:
-
             score += symptom_weights[symptom]
             detected.append(symptom)
 
         else:
             unknown.append(symptom)
 
-    # Risk classification
     if score <= 25:
         risk = "Low"
         recommendation = "Rest and monitor symptoms at home."
@@ -77,15 +88,87 @@ def calculate_risk(symptoms):
     return score, risk, recommendation, detected, unknown
 
 
-# Home route
+# ---------------- AUTH ROUTES ---------------- #
+
 @app.route("/")
 def home():
-    return render_template("index.html")
+
+    if "user" in session:
+        return redirect("/dashboard")
+
+    return redirect("/login")
 
 
-# Prediction route
+@app.route("/login", methods=["GET","POST"])
+def login():
+
+    if request.method == "POST":
+
+        email = request.form["email"]
+        password = request.form["password"]
+
+        db = get_db()
+
+        user = db.execute(
+            "SELECT * FROM users WHERE email=? AND password=?",
+            (email,password)
+        ).fetchone()
+
+        if user:
+            session["user"] = email
+            return redirect("/dashboard")
+
+    return render_template("login.html")
+
+
+@app.route("/signup", methods=["GET","POST"])
+def signup():
+
+    if request.method == "POST":
+
+        email = request.form["email"]
+        password = request.form["password"]
+
+        db = get_db()
+
+        db.execute(
+            "INSERT INTO users(email,password) VALUES (?,?)",
+            (email,password)
+        )
+
+        db.commit()
+
+        return redirect("/login")
+
+    return render_template("signup.html")
+
+
+@app.route("/logout")
+def logout():
+
+    session.pop("user",None)
+
+    return redirect("/login")
+
+
+# ---------------- DASHBOARD ---------------- #
+
+@app.route("/dashboard")
+def dashboard():
+
+    if "user" not in session:
+        return redirect("/login")
+
+    return render_template("dashboard.html")
+
+
+# ---------------- PREDICTION API ---------------- #
+
 @app.route("/predict", methods=["POST"])
 def predict():
+
+    if "user" not in session:
+        return jsonify({"error":"Unauthorized"}),401
 
     data = request.get_json()
 
@@ -106,4 +189,4 @@ def predict():
 
 
 if __name__ == "__main__":
-    app.run(debug=True , port = 5003)
+    app.run(debug=True , port=5003)
