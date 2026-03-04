@@ -1,13 +1,15 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
+
 <meta charset="UTF-8">
 
-<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 
 <title>AI Health Risk Detector</title>
 
-<meta name="description" content="AI-powered health risk detection app. Select your symptoms and get instant AI analysis with risk scores and medical recommendations.">
+<meta name="description" content="AI-powered health risk detection app.">
 
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -16,7 +18,11 @@
 
 <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
 
+
 <style>
+
+/* Logout Button */
+
 .logout-btn{
 position:fixed;
 top:20px;
@@ -28,67 +34,59 @@ border-radius:8px;
 text-decoration:none;
 font-weight:600;
 z-index:9999;
-box-shadow:0 4px 10px rgba(0,0,0,0.3);
 }
 
-.logout-btn:hover{
-background:#dc2626;
+
+/* Mobile fix for analyze button */
+
+.bottom-action{
+position:fixed;
+bottom:15px;
+left:0;
+width:100%;
+display:flex;
+justify-content:center;
+padding:0 20px;
+z-index:1000;
 }
+
+.screen-content{
+padding-bottom:120px;
+}
+
+#btn-analyze{
+width:100%;
+max-width:420px;
+}
+
 </style>
 
 </head>
 
+
 <body>
 
-<!-- Logout Button -->
+
 <a href="/logout" class="logout-btn">Logout</a>
+
 
 <div class="app-container">
 
-<!-- Floating background shapes -->
-<div class="bg-shapes">
-<div class="shape shape-1"></div>
-<div class="shape shape-2"></div>
-<div class="shape shape-3"></div>
-<div class="shape shape-4"></div>
-</div>
 
+<!-- Welcome Screen -->
 
-<!-- Screen 1 — Welcome -->
 <section id="screen-welcome" class="screen active">
 
 <div class="screen-content welcome-content">
 
-<div class="welcome-badge">
+<h1>AI Health Risk <span class="gradient-text">Detector</span></h1>
 
-<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
-<path d="M22 12h-4l-3 9L9 3l-3 9H2"/>
-</svg>
-
-<span>AI-Powered Analysis</span>
-
-</div>
-
-<div class="welcome-illustration">
-
-<img src="{{ url_for('static', filename='doctor.jpeg') }}">
-
-<div class="illustration-glow"></div>
-
-</div>
-
-<div class="welcome-text">
-
-<h1>AI Health Risk<br><span class="gradient-text">Detector</span></h1>
-
-<p class="subtitle">
-Detect your health risk in seconds using advanced AI symptom analysis
-</p>
-
-</div>
+<p>Detect your health risk using AI symptom analysis</p>
 
 <button class="btn btn-primary btn-glow" id="btn-start">
+
 Start Symptom Check
+
 </button>
 
 </div>
@@ -96,7 +94,9 @@ Start Symptom Check
 </section>
 
 
-<!-- Screen 2 — Symptom Selection -->
+
+<!-- Symptoms Screen -->
+
 <section id="screen-symptoms" class="screen">
 
 <div class="screen-content">
@@ -106,23 +106,34 @@ Start Symptom Check
 <button class="btn-back" id="btn-back-symptoms">←</button>
 
 <div>
+
 <h2>Select Your Symptoms</h2>
-<p class="header-subtitle">Tap all symptoms you're experiencing</p>
-</div>
+
+<p>Tap symptoms you feel</p>
 
 </div>
 
-<div class="symptom-counter" id="symptom-counter">
+</div>
+
+
+<div class="symptom-counter">
+
 <span id="symptom-count">0</span> symptoms selected
+
 </div>
+
 
 <div class="symptom-grid" id="symptom-grid">
+
 </div>
+
 
 <div class="bottom-action">
 
 <button class="btn btn-primary btn-glow" id="btn-analyze" disabled>
+
 Analyze Symptoms
+
 </button>
 
 </div>
@@ -132,7 +143,9 @@ Analyze Symptoms
 </section>
 
 
-<!-- Screen 3 — Risk Result -->
+
+<!-- Result Screen -->
+
 <section id="screen-result" class="screen">
 
 <div class="screen-content result-content">
@@ -142,13 +155,17 @@ Analyze Symptoms
 <button class="btn-back" id="btn-back-result">←</button>
 
 <div>
+
 <h2>Risk Analysis</h2>
-<p class="header-subtitle">AI-powered health assessment</p>
-</div>
+
+<p>AI health assessment</p>
 
 </div>
 
-<div class="result-card" id="result-card">
+</div>
+
+
+<div class="result-card">
 
 <h3>Risk Score: <span id="risk-score-number">0</span></h3>
 
@@ -156,10 +173,13 @@ Analyze Symptoms
 
 </div>
 
+
 <div class="bottom-action">
 
 <button class="btn btn-primary btn-glow" id="btn-recommendation">
+
 View Recommendations
+
 </button>
 
 </div>
@@ -169,7 +189,9 @@ View Recommendations
 </section>
 
 
-<!-- Screen 4 — Recommendation -->
+
+<!-- Recommendation Screen -->
+
 <section id="screen-recommendation" class="screen">
 
 <div class="screen-content recommendation-content">
@@ -179,11 +201,15 @@ View Recommendations
 <button class="btn-back" id="btn-back-recommendation">←</button>
 
 <div>
+
 <h2>Recommendations</h2>
-<p class="header-subtitle">AI medical guidance</p>
+
+<p>AI medical guidance</p>
+
 </div>
 
 </div>
+
 
 <div class="recommendation-card">
 
@@ -193,27 +219,38 @@ View Recommendations
 
 </div>
 
+
 <div class="recommendation-actions">
 
 <button class="btn btn-call">
+
 Call Doctor
+
 </button>
 
+
 <button class="btn btn-hospital">
+
 Find Nearby Hospital
+
 </button>
 
 </div>
 
+
 <button class="btn btn-restart" id="btn-restart">
+
 Start New Check
+
 </button>
 
 </div>
 
 </section>
 
+
 </div>
+
 
 <script src="{{ url_for('static', filename='script.js') }}"></script>
 
